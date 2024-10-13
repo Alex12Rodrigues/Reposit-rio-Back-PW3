@@ -6,7 +6,7 @@ const connection = require('../database/database');
 const modelPedido = connection.define(
     'tbl_pedido',
     {
-        cod_livro:{
+        cod_pedido:{
             type:Sequelize.INTEGER,
             primaryKey:true,
             autoIncrement:true

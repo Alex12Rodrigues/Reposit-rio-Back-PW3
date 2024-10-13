@@ -1,5 +1,4 @@
 const express = require('express');
-
 const modelPedido = require('../model/modelPedido');
 
 const router = express.Router();
@@ -10,113 +9,123 @@ router.get('/', (req, res) => {
 });
 
 /* INSERÇÃO DE PEDIDO */
-router.post('/inserirPedido', (req, res) => {
-    const { nome_marca, modelo_escolhido, descricao_modelo, cor_escolhida } = req.body;
+router.post('/inserirPedido', async (req, res) => {
+    const { nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida } = req.body;
 
-    modelPedido.create({
-        nome_marca,
-        modelo_escolhido,
-        descricao_modelo,
-        cor_escolhida
-    })
-    .then(() => {
+    try {
+        await modelPedido.create({ nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida });
         return res.status(201).json({
             errorStatus: false,
             mensageStatus: 'PEDIDO REALIZADO COM SUCESSO'
         });
-    })
-    .catch((error) => {
+    } catch (error) {
         return res.status(400).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO COM O PEDIDO',
-            errorObject: error
+            errorObject: error.message // Filtrar o que for necessário
         });
-    });
+    }
 });
 
 /* LISTAGEM GERAL DE PEDIDOS */
-router.get('/listagemPedidos', (req, res) => {
-    modelPedido.findAll()
-    .then((response) => {
+router.get('/listagemPedidos', async (req, res) => {
+    try {
+        const response = await modelPedido.findAll();
         return res.status(200).json({
             errorStatus: false,
             mensageStatus: 'PEDIDOS LISTADOS COM SUCESSO',
             data: response
         });
-    })
-    .catch((error) => {
+    } catch (error) {
         return res.status(400).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO LISTAR OS PEDIDOS',
-            errorObject: error
+            errorObject: error.message
         });
-    });
+    }
 });
 
 /* LISTAGEM DE PEDIDO POR CÓDIGO */
-router.get('/listagemPedido/:cod_livro', (req, res) => {
-    const { cod_livro } = req.params;
+router.get('/listagemPedido/:cod_pedido', async (req, res) => {
+    const { cod_pedido } = req.params;
 
-    modelPedido.findByPk(cod_livro)
-    .then((response) => {
+    try {
+        const response = await modelPedido.findByPk(cod_pedido);
+        if (!response) {
+            return res.status(404).json({
+                errorStatus: true,
+                mensageStatus: 'PEDIDO NÃO ENCONTRADO'
+            });
+        }
         return res.status(200).json({
             errorStatus: false,
             mensageStatus: 'PEDIDO RECUPERADO COM SUCESSO',
             data: response
         });
-    })
-    .catch((error) => {
+    } catch (error) {
         return res.status(400).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO RECUPERAR O PEDIDO',
-            errorObject: error
+            errorObject: error.message
         });
-    });
+    }
 });
 
 /* EXCLUSÃO DE PEDIDO */
-router.delete('/excluirPedido/:cod_livro', (req, res) => {
-    const { cod_livro } = req.params;
+router.delete('/excluirPedido/:cod_pedido', async (req, res) => {
+    const { cod_pedido } = req.params;
 
-    modelPedido.destroy({ where: { cod_livro } })
-    .then(() => {
+    try {
+        const deleted = await modelPedido.destroy({ where: { cod_pedido } });
+        if (!deleted) {
+            return res.status(404).json({
+                errorStatus: true,
+                mensageStatus: 'PEDIDO NÃO ENCONTRADO'
+            });
+        }
         return res.status(200).json({
             errorStatus: false,
             mensageStatus: 'PEDIDO EXCLUIDO COM SUCESSO'
         });
-    })
-    .catch((error) => {
+    } catch (error) {
         return res.status(400).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO EXCLUIR O PEDIDO',
-            errorObject: error
+            errorObject: error.message
         });
-    });
+    }
 });
 
 /* ALTERAÇÃO DE PEDIDO */
-router.put('/alterarPedido', (req, res) => {
-    const { cod_livro, nome_marca, modelo_escolhido, descricao_modelo, cor_escolhida } = req.body;
+router.put('/alterarPedido', async (req, res) => {
+    const { cod_pedido, nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida } = req.body;
 
-    modelPedido.update({
-        nome_marca,
-        modelo_escolhido,
-        descricao_modelo,
-        cor_escolhida
-    }, { where: { cod_livro } })
-    .then(() => {
+    try {
+        const [updated] = await modelPedido.update({
+            nome_marca,
+            modelo_escolhido,
+            descricao_escrita,
+            cor_escolhida
+        }, { where: { cod_pedido } });
+        
+        if (!updated) {
+            return res.status(404).json({
+                errorStatus: true,
+                mensageStatus: 'PEDIDO NÃO ENCONTRADO'
+            });
+        }
+
         return res.status(200).json({
             errorStatus: false,
             mensageStatus: 'PEDIDO ALTERADO COM SUCESSO'
         });
-    })
-    .catch((error) => {
+    } catch (error) {
         return res.status(400).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO ALTERAR O PEDIDO',
-            errorObject: error
+            errorObject: error.message
         });
-    });
+    }
 });
 
 module.exports = router;

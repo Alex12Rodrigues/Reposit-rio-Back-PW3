@@ -9,3 +9,7 @@ INSERT INTO tbl_tamanhos (tamanho_escolhido, createdAt, updatedAt) VALUES ('Outr
 
 
 drop database bd_loja;
+
+select *from tbl_tamanhos;
+
+select *from tbl_pedidos;

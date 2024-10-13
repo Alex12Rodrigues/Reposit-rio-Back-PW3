@@ -5,7 +5,7 @@ const connection = require('../database/database');
 const modelTamanho = connection.define(
     'tbl_tamanho',
     {
-        cod_categoria:{
+        cod_tamanho:{
             type:Sequelize.INTEGER,
             primaryKey:true,
             autoIncrement:true
