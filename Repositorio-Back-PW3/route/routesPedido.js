@@ -1,4 +1,5 @@
 const express = require('express');
+const { body, validationResult } = require('express-validator');
 const modelPedido = require('../model/modelPedido');
 
 const router = express.Router();
@@ -9,7 +10,19 @@ router.get('/', (req, res) => {
 });
 
 /* INSERÇÃO DE PEDIDO */
-router.post('/inserirPedido', async (req, res) => {
+router.post('/pedidos', [
+    body('nome_marca').notEmpty().withMessage('Nome da marca é obrigatório'),
+    body('modelo_escolhido').notEmpty().withMessage('Modelo escolhido é obrigatório'),
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errorStatus: true,
+            mensageStatus: 'ERROS DE VALIDAÇÃO',
+            errors: errors.array()
+        });
+    }
+
     const { nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida } = req.body;
 
     try {
@@ -19,16 +32,16 @@ router.post('/inserirPedido', async (req, res) => {
             mensageStatus: 'PEDIDO REALIZADO COM SUCESSO'
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO COM O PEDIDO',
-            errorObject: error.message // Filtrar o que for necessário
+            errorObject: error.message
         });
     }
 });
 
 /* LISTAGEM GERAL DE PEDIDOS */
-router.get('/listagemPedidos', async (req, res) => {
+router.get('/pedidos', async (req, res) => {
     try {
         const response = await modelPedido.findAll();
         return res.status(200).json({
@@ -37,7 +50,7 @@ router.get('/listagemPedidos', async (req, res) => {
             data: response
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO LISTAR OS PEDIDOS',
             errorObject: error.message
@@ -46,7 +59,7 @@ router.get('/listagemPedidos', async (req, res) => {
 });
 
 /* LISTAGEM DE PEDIDO POR CÓDIGO */
-router.get('/listagemPedido/:cod_pedido', async (req, res) => {
+router.get('/pedidos/:cod_pedido', async (req, res) => {
     const { cod_pedido } = req.params;
 
     try {
@@ -63,7 +76,7 @@ router.get('/listagemPedido/:cod_pedido', async (req, res) => {
             data: response
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO RECUPERAR O PEDIDO',
             errorObject: error.message
@@ -72,7 +85,7 @@ router.get('/listagemPedido/:cod_pedido', async (req, res) => {
 });
 
 /* EXCLUSÃO DE PEDIDO */
-router.delete('/excluirPedido/:cod_pedido', async (req, res) => {
+router.delete('/pedidos/:cod_pedido', async (req, res) => {
     const { cod_pedido } = req.params;
 
     try {
@@ -85,10 +98,10 @@ router.delete('/excluirPedido/:cod_pedido', async (req, res) => {
         }
         return res.status(200).json({
             errorStatus: false,
-            mensageStatus: 'PEDIDO EXCLUIDO COM SUCESSO'
+            mensageStatus: 'PEDIDO EXCLUÍDO COM SUCESSO'
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO EXCLUIR O PEDIDO',
             errorObject: error.message
@@ -97,7 +110,7 @@ router.delete('/excluirPedido/:cod_pedido', async (req, res) => {
 });
 
 /* ALTERAÇÃO DE PEDIDO */
-router.put('/alterarPedido', async (req, res) => {
+router.put('/pedidos', async (req, res) => {
     const { cod_pedido, nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida } = req.body;
 
     try {
@@ -120,7 +133,7 @@ router.put('/alterarPedido', async (req, res) => {
             mensageStatus: 'PEDIDO ALTERADO COM SUCESSO'
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO ALTERAR O PEDIDO',
             errorObject: error.message

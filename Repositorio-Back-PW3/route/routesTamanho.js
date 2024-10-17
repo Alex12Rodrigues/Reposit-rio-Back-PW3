@@ -1,10 +1,22 @@
 const express = require('express');
+const { body, validationResult } = require('express-validator');
 const modelTamanho = require('../model/modelTamanho');
 
 const router = express.Router();
 
 /* INSERÇÃO DE TAMANHO */
-router.post('/inserirTamanho', async (req, res) => {
+router.post('/tamanhos', [
+    body('tamanho_escolhido').notEmpty().withMessage('Tamanho escolhido é obrigatório')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({
+            errorStatus: true,
+            mensageStatus: 'ERROS DE VALIDAÇÃO',
+            errors: errors.array()
+        });
+    }
+
     const { tamanho_escolhido } = req.body;
 
     try {
@@ -14,16 +26,16 @@ router.post('/inserirTamanho', async (req, res) => {
             mensageStatus: 'TAMANHO INSERIDO COM SUCESSO'
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO INSERIR O TAMANHO',
-            errorObject: error.message // Considerar filtrar informações sensíveis
+            errorObject: error.message
         });
     }
 });
 
 /* LISTAGEM GERAL DE TAMANHOS */
-router.get('/listagemTamanhos', async (req, res) => {
+router.get('/tamanhos', async (req, res) => {
     try {
         const response = await modelTamanho.findAll();
         return res.status(200).json({
@@ -32,7 +44,7 @@ router.get('/listagemTamanhos', async (req, res) => {
             data: response
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO LISTAR OS TAMANHOS',
             errorObject: error.message
@@ -41,7 +53,7 @@ router.get('/listagemTamanhos', async (req, res) => {
 });
 
 /* LISTAGEM DE TAMANHO POR CÓDIGO */
-router.get('/listagemTamanho/:cod_tamanho', async (req, res) => {
+router.get('/tamanhos/:cod_tamanho', async (req, res) => {
     const { cod_tamanho } = req.params;
 
     try {
@@ -58,7 +70,7 @@ router.get('/listagemTamanho/:cod_tamanho', async (req, res) => {
             data: response
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO RECUPERAR O TAMANHO',
             errorObject: error.message
@@ -67,7 +79,7 @@ router.get('/listagemTamanho/:cod_tamanho', async (req, res) => {
 });
 
 /* EXCLUSÃO DE TAMANHO */
-router.delete('/excluirTamanho/:cod_tamanho', async (req, res) => {
+router.delete('/tamanhos/:cod_tamanho', async (req, res) => {
     const { cod_tamanho } = req.params;
 
     try {
@@ -83,7 +95,7 @@ router.delete('/excluirTamanho/:cod_tamanho', async (req, res) => {
             mensageStatus: 'TAMANHO EXCLUÍDO COM SUCESSO'
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO EXCLUIR O TAMANHO',
             errorObject: error.message
@@ -92,7 +104,7 @@ router.delete('/excluirTamanho/:cod_tamanho', async (req, res) => {
 });
 
 /* ALTERAÇÃO DE TAMANHO */
-router.put('/alterarTamanho', async (req, res) => {
+router.put('/tamanhos', async (req, res) => {
     const { cod_tamanho, tamanho_escolhido } = req.body;
 
     try {
@@ -108,7 +120,7 @@ router.put('/alterarTamanho', async (req, res) => {
             mensageStatus: 'TAMANHO ALTERADO COM SUCESSO'
         });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             errorStatus: true,
             mensageStatus: 'HOUVE UM ERRO AO ALTERAR O TAMANHO',
             errorObject: error.message
