@@ -5,7 +5,11 @@ INSERT INTO tbl_tamanhos (tamanho_escolhido, createdAt, updatedAt) VALUES ('P', 
 INSERT INTO tbl_tamanhos (tamanho_escolhido, createdAt, updatedAt) VALUES ('M', now(), now());
 INSERT INTO tbl_tamanhos (tamanho_escolhido, createdAt, updatedAt) VALUES ('G', now(), now());
 INSERT INTO tbl_tamanhos (tamanho_escolhido, createdAt, updatedAt) VALUES ('GG', now(), now());
+INSERT INTO tbl_tamanhos (tamanho_escolhido, createdAt, updatedAt) VALUES ('Outro', now(), now());
+
 
 select *from tbl_tamanhos;
 
 select *from tbl_pedidos;
+
+drop database bd_loja;

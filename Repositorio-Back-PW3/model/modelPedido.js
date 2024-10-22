@@ -24,6 +24,10 @@ const modelPedido = connection.define(
         cor_escolhida: {
             type: Sequelize.STRING(100),
             allowNull: true
+        },
+        tamanho_escolhido: { 
+            type: Sequelize.STRING(20), 
+            allowNull: true 
         }
     },
     {
@@ -31,6 +35,6 @@ const modelPedido = connection.define(
     }
 );
 
-// modelPedido.sync({force: true});
+// modelPedido.sync({force: true}); 
 
 module.exports = modelPedido;
