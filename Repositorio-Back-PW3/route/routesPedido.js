@@ -23,10 +23,10 @@ router.post('/pedidos', [
         });
     }
 
-    const { nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida } = req.body;
+    const { nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida, tamanho_escolhido } = req.body;
 
     try {
-        await modelPedido.create({ nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida });
+        await modelPedido.create({ nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida, tamanho_escolhido });
         return res.status(201).json({
             errorStatus: false,
             mensageStatus: 'PEDIDO REALIZADO COM SUCESSO'
@@ -111,14 +111,15 @@ router.delete('/pedidos/:cod_pedido', async (req, res) => {
 
 /* ALTERAÇÃO DE PEDIDO */
 router.put('/pedidos', async (req, res) => {
-    const { cod_pedido, nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida } = req.body;
+    const { cod_pedido, nome_marca, modelo_escolhido, descricao_escrita, cor_escolhida, tamanho_escolhido } = req.body;
 
     try {
         const [updated] = await modelPedido.update({
             nome_marca,
             modelo_escolhido,
             descricao_escrita,
-            cor_escolhida
+            cor_escolhida,
+            tamanho_escolhido
         }, { where: { cod_pedido } });
         
         if (!updated) {
